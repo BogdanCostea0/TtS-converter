@@ -1,24 +1,33 @@
 from gtts import gTTS
 import os
 from tkinter import *
+from tkinter import messagebox
 import pandas as pd
+
 # ------------------ CONSTANTS --------------
 GRAY = "#d3d3d3"
 GREEN = "#9bdeac"
 BLUE = "#154c79"
 FONT_NAME = "Courier"
-# filename = None
-DEX = {}
+# filename = Non
 
 # -------------------- GENERATE --------------
 def text_to_speech():
     text = message_entry.get()
-    tts = gTTS(text=text, lang='ro')
+    try:
+        tts = gTTS(text=text, lang='ro')
+    except:
+        messagebox.showinfo(title = "Camp necompletat", message= "Completeaza campul 'Mesaj' pentru a putea rula.")
+
     global filename
-    filename = f'{key_entry.get()}.mp3' 
-    tts.save(filename)
-    DEX[f'{key_entry.get()}']=f'{message_entry.get()}'
-    print(DEX)
+    if len(key_entry.get())  > 0:
+        filename = f'{key_entry.get()}.mp3'
+    else:
+        messagebox.showinfo(title = "Camp necompletat", message= "Completeaza campul 'Cod fisier' pentru a putea rula.")
+
+
+
+    tts.save(f'./audio/{filename}')
 
 def generate_all():
     df = pd.read_csv("./db/DB.csv",dtype = str)
@@ -26,29 +35,26 @@ def generate_all():
     print(df)
     print(type(df))
     for index,row in df.iterrows():
-        
-        # print(row[0],row[1])
-        # text = row[1]
         tts = gTTS(text=row[1], lang='ro')
-        # global filename
-        # filename = f'{row[0]}.mp3' 
         tts.save(f'./audio/{row[0]}.mp3')
 
 # --------------------- PLAY ------------------
 def play():
-    global filename
+    
     try:
-        os.system(f"start {filename}")
+        global filename
+        os.system(f"start ./audio/{filename}")
     except:
+        messagebox.showinfo(title = "Fisierul nu a fost gasit! ", message= "Pentru a rula un fisier audio mai intai acesta trebuie generat")
         
 # ---------------------- UI --------------------
 window = Tk()
-window.title("Text to Speech Converter")
+window.title("Convertor de Text în Vorbire")
 window.config(padx=40,pady=40,bg=GRAY, highlightthickness=0)
 
 canvas = Canvas(width=400, height=200,bg=GRAY)
 
-title_label = Label(text="Text to Speech Converter",fg=BLUE, bg=GRAY, font=(FONT_NAME,30,"bold"))
+title_label = Label(text="Convertor de Text în Vorbire",fg=BLUE, bg=GRAY, font=(FONT_NAME,30,"bold"))
 title_label.grid(column=1, row=0)
 
 logo_img = PhotoImage(file="./contents/tts.png")
@@ -56,7 +62,7 @@ canvas.create_image(200, 100, image=logo_img)
 canvas.config(highlightthickness=0)
 canvas.grid(row=1,column=1)
 
-message_label = Label(text="Your message",bg=GRAY, font=(FONT_NAME,10))
+message_label = Label(text="Mesajul tău",bg=GRAY, font=(FONT_NAME,10))
 message_label.grid(column=0, row=3)
 
 message_entry = Entry(width=66)
@@ -64,15 +70,15 @@ message_entry.insert(END, string="")
 message_entry.focus()
 message_entry.grid(column=1,row=3)
 
-generate_button = Button(text="Generate sound", command=text_to_speech)
+generate_button = Button(text="Generează sunet", command=text_to_speech)
 generate_button.config(width=15, )
 generate_button.grid(column=2,row=3)
 
-play_button = Button(text="Play sound", command=play)
+play_button = Button(text="Redă sunet", command=play)
 play_button.config(width=15, )
 play_button.grid(column=2,row=4)
 
-generate_all_button = Button(text="Generate all from csv", command=generate_all)
+generate_all_button = Button(text="Genereaza din CSV", command=generate_all)
 generate_all_button.config(width=15, )
 generate_all_button.grid(column=2,row=5)
 
