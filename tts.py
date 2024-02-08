@@ -9,7 +9,7 @@ GRAY = "#d3d3d3"
 GREEN = "#9bdeac"
 BLUE = "#154c79"
 FONT_NAME = "Courier"
-# filename = Non
+# filename = None
 
 # -------------------- GENERATE --------------
 def text_to_speech():
@@ -30,7 +30,10 @@ def text_to_speech():
     tts.save(f'./audio/{filename}')
 
 def generate_all():
-    df = pd.read_csv("./db/DB.csv",dtype = str)
+    try:
+        df = pd.read_csv("./db/DB.csv",dtype = str)
+    except:
+        messagebox.showinfo(title="Fișierul nu a fost găsit", message="Fișierul corespunzător bazei de date nu există")
     # DB = df.to_string()
     print(df)
     print(type(df))
