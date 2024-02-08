@@ -39,7 +39,6 @@ def generate_all():
 
 # --------------------- PLAY ------------------
 def play():
-    
     try:
         global filename
         os.system(f"start ./audio/{filename}")
